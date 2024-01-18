@@ -1,5 +1,5 @@
-export const appName = 'Vitesse for Nuxt 3'
-export const appDescription = 'Vitesse for Nuxt 3'
+export const appName = 'Trade Cabinet'
+export const appDescription = 'Tinkoff trade cabinet'
 
 export const imageCodes = {
   RU000A106YF0: 'vkc',
