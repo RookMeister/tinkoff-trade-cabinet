@@ -96,9 +96,7 @@ const { data, pending } = useFetch('/api/operations', { lazy: true })
             </template>
             <template #title>
               <div>{{ operation.description }}</div>
-              <div style="color: rgba(0,0,0,.54)">
-                {{ operation.name }}
-              </div>
+              <div>{{ operation.name }}</div>
             </template>
             <template #value>
               <!-- <div v-if="operation.priceNumber" :style="{ color: colorText(operation.priceNumber) }">

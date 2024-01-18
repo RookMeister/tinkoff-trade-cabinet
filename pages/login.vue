@@ -29,13 +29,13 @@ async function onSubmit() {
       <van-nav-bar :title="title" :border="false" safe-area-inset-top fixed />
     </template>
     <template #default>
-      <!-- t.62es2hoyD5foyjQiKld1ihmIpxqmPie_tpTeXDmrEGn3ZxJTSZ_yywRyZFNci7rpURZGVsxF-17cwesxK8DSNA -->
       <van-form @submit="onSubmit">
         <van-cell-group inset>
           <van-field
             v-model="tokenForm"
             name="Токен"
             label="Токен"
+            center
             :rules="[{ required: true, message: 'Отсутствует токен' }]"
           >
             <template #button>

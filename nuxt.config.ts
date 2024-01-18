@@ -14,29 +14,7 @@ export default defineNuxtConfig({
   ],
 
   colorMode: {
-    // preference: 'dark',
     classPrefix: 'van-theme-',
-  },
-
-  // routeRules: {
-  //   // Generated at build time for SEO purpose
-  //   '/': { prerender: true },
-  //   // Cached for 1 hour
-  //   '/api/*': { cache: { maxAge: 60 * 60 } },
-  //   // Redirection to avoid 404
-  //   // '/old-page': {
-  //   //   redirect: { to: { '/new-page', statusCode: 302 }
-  //   // }
-  //   // ...
-  // },
-
-  experimental: {
-    // when using generate, payload js assets included in sw precache manifest
-    // but missing on offline, disabling extraction it until fixed
-    payloadExtraction: false,
-    inlineSSRStyles: false,
-    renderJsonPayloads: true,
-    typedPages: true,
   },
 
   css: [
@@ -52,7 +30,6 @@ export default defineNuxtConfig({
     prerender: {
       crawlLinks: false,
       routes: ['/'],
-      ignore: ['/hi'],
     },
   },
 
@@ -72,10 +49,7 @@ export default defineNuxtConfig({
         { rel: 'manifest', href: '/manifest.json' },
       ],
       meta: [
-        // { name: 'viewport', content: 'width=device-width, initial-scale=1' },
         { name: 'description', content: appDescription },
-        // { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' },
-
         { name: 'apple-mobile-web-app-capable', content: 'yes' },
         { name: 'msapplication-TileColor', content: '#da532c' },
         { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' },
@@ -83,10 +57,4 @@ export default defineNuxtConfig({
       ],
     },
   },
-
-  // pwa,
-
-  // devtools: {
-  //   enabled: true,
-  // },
 })

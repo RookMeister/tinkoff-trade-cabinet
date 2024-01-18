@@ -1,18 +1,3 @@
-import { TinkoffInvestApi } from 'tinkoff-invest-api'
-
-// export default defineEventHandler(async (event) => {
-//   try {
-//     const token = getCookie(event, 'token') || ''
-//     const api = new TinkoffInvestApi({ token })
-
-//     const { accounts } = await api.users.getAccounts({})
-//     return accounts
-//   }
-//   catch (error) {
-//     return error
-//   }
-// })
-
 export default defineNuxtRouteMiddleware(async (to) => {
   const token = useCookie('token')
 

@@ -1,18 +1,19 @@
 <script setup lang="ts" generic="T extends any, O extends any">
 const route = useRoute()
-const active = ref(route.name)
 const color = useColorMode()
 color.preference = 'system'
+
+const nameRoute = computed(() => route.name?.toString() || '')
 </script>
 
 <template>
   <van-config-provider :theme="color.preference">
     <slot name="header" />
-    <main class="px-4 mx-auto max-w-7xl">
+    <main class="px-1 mx-auto max-w-7xl">
       <slot />
     </main>
-    <van-tabbar v-model="active" safe-area-inset-bottom>
-      <van-tabbar-item name="home" icon="home-o" to="/" value>
+    <van-tabbar :model-value="nameRoute" safe-area-inset-bottom>
+      <van-tabbar-item name="home" icon="home-o" to="/home" value>
         Главная
       </van-tabbar-item>
       <van-tabbar-item name="operations" icon="list-switch" to="/operations">
