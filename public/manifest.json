@@ -1,0 +1,12 @@
+{
+  "name": "Trade",
+  "short_name": "Trade",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "",
+  "lang": "ru",
+  "scope": "/",
+  "orientation": "portrait",
+  "icons": [
+  ]
+}
