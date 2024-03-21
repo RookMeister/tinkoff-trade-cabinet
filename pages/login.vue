@@ -39,7 +39,7 @@ async function onSubmit() {
             :rules="[{ required: true, message: 'Отсутствует токен' }]"
           >
             <template #button>
-              <van-button size="small" round block type="primary" native-type="submit">
+              <van-button size="small" round block type="primary" @click="onSubmit">
                 Применить
               </van-button>
             </template>

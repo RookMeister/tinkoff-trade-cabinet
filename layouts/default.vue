@@ -13,7 +13,7 @@ const nameRoute = computed(() => route.name?.toString() || '')
       <slot />
     </main>
     <van-tabbar :model-value="nameRoute" safe-area-inset-bottom>
-      <van-tabbar-item name="home" icon="home-o" to="/home" value>
+      <van-tabbar-item name="home" icon="home-o" to="/" value>
         Главная
       </van-tabbar-item>
       <van-tabbar-item name="operations" icon="list-switch" to="/operations">

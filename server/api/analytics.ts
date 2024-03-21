@@ -29,6 +29,7 @@ export default defineEventHandler(async (event) => {
   })
 
   const portfolio = await api.operations.getPortfolio({ accountId })
+  console.log(operations.items.filter(({ instrumentType }) => instrumentType === 'share').map(({ name, description }) => `${name} ${description}`))
 
   const idSharesOperations = operations.items.filter(({ instrumentType }) => instrumentType === 'share').map(({ figi }) => figi)
   const idSharesOperationsUnique = [...new Set(idSharesOperations)]
@@ -53,15 +54,19 @@ export default defineEventHandler(async (event) => {
       }
     }
     const expectedYield = objecPortfolioPosition[o.figi]?.expectedYield
+    console.log(1, expectedYield)
+
     const averagePositionPrice = objecPortfolioPosition[o.figi]?.averagePositionPrice
     const quantity = objecPortfolioPosition[o.figi]?.quantity
 
-    if (expectedYield && averagePositionPrice && quantity)
+    if (expectedYield && averagePositionPrice && quantity && myOperations[isin]) {
+      console.log(2, Helpers.toNumber(expectedYield))
       myOperations[isin].expectedYield = Helpers.toNumber(expectedYield)
-    if (averagePositionPrice && quantity)
+    }
+    if (averagePositionPrice && quantity && myOperations[isin])
       myOperations[isin].expectedYield += Helpers.toNumber(averagePositionPrice) * Helpers.toNumber(quantity)
 
-    if (((o.type === 15) || (o.type === 21) || (o.type === 22)) && (o.instrumentType !== 'currency')) {
+    if (myOperations[isin] && ((o.type === 15) || (o.type === 21) || (o.type === 22)) && (o.instrumentType !== 'currency')) {
       myOperations[isin].allYield += Helpers.toNumber(o.payment) || 0
 
       myOperations[isin].currentPrice = objectLastPrices[o.figi]

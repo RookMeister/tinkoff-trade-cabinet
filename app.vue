@@ -44,9 +44,11 @@ body,
 
 .van-theme-dark {
   /* background-color: var(--van-black); */
-  /* --van-nav-bar-background: var(--van-background) !important; */
+  --van-nav-bar-background: var(--van-background) !important;
+  --van-tabbar-background: var(--van-background) !important;
 }
 .van-doc-theme-light {
+  --van-nav-bar-background: var(--van-background) !important;
   /* background-color: var(--van-gray-1); */
 }
 

@@ -57,9 +57,8 @@ async function onRefresh() {
         </van-cell-group>
         <van-popup
           v-model:show="show"
-          closeable
           position="bottom"
-          round
+          round closeable
           :style="{ maxHeight: '90%' }"
         >
           <van-cell-group v-if="operations.length" style="margin-top: 54px;">
