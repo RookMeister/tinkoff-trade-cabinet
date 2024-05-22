@@ -2,7 +2,7 @@ import '@total-typescript/ts-reset/filter-boolean'
 import { Helpers, TinkoffInvestApi } from 'tinkoff-invest-api'
 
 export default defineEventHandler(async (event) => {
-  const token = getCookie(event, 'token') || ''
+  const { token = '' } = parseCookies(event)
   const api = new TinkoffInvestApi({ token })
   const { accounts } = await api.users.getAccounts({})
   const accountId = accounts[0].id

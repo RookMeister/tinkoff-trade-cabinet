@@ -14,10 +14,12 @@ const { data, refresh } = await useFetch('/api/auth')
 
 const tokenForm = ref(token.value || '')
 
-async function onSubmit() {
+function onSubmit() {
   showLoadingToast({ message: 'Проверка токена...', forbidClick: true })
   token.value = tokenForm.value
-  await refresh()
+  setTimeout(async () => {
+    await refresh()
+  }, 500)
   if (data.value)
     data.value.success ? router.push('/') : showFailToast(data.value.message)
 }

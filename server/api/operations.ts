@@ -5,7 +5,7 @@ import type { Share } from 'tinkoff-invest-api/cjs/generated/instruments'
 type MyOperations = OperationItem & { paymentNumber?: number, priceNumber?: number, yieldNumber?: number, yieldRelativeNumber?: number, isin: string }
 
 export default defineEventHandler(async (event) => {
-  const token = getCookie(event, 'token') || ''
+  const { token = '' } = parseCookies(event)
   const api = new TinkoffInvestApi({ token })
   const { accounts } = await api.users.getAccounts({})
   const accountId = accounts[0].id
