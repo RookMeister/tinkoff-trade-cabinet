@@ -2,6 +2,9 @@ export const appName = 'Trade Cabinet'
 export const appDescription = 'Tinkoff trade cabinet'
 
 export const imageCodes = {
+  RU000A107563: 'TDIV',
+  RU000A0JQ9P9: 'spbe',
+  RU000A1025V3: 'RU000A0JWDN61',
   RU000A106YF0: 'vkc',
   US83418T1088: 'cian',
   US29760G1031: 'EtalonGroup',
