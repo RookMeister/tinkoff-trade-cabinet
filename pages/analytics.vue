@@ -26,6 +26,17 @@ async function onRefresh() {
   loading.value = false
   showToast('Refresh Success')
 }
+
+const total = computed(() => {
+  let total = 0;
+  if (data.value) {
+    data.value.forEach(op => {
+      total += op.allYield + op.expectedYield
+    })
+  }
+
+  return total
+})
 </script>
 
 <template>
@@ -45,6 +56,17 @@ async function onRefresh() {
             center
             @click="openOperations(pos.operations, pos.share?.isin || pos.etf?.isin)"
           > -->
+          <van-cell
+            key="all"
+            title="Общая доходность"
+            center
+          >
+            <template #value>
+              <div :style="{ color: colorText(total) }">
+                {{ `${useMoneyFormatKopek(total, true)}` }}
+              </div>
+            </template>
+          </van-cell>
           <van-cell
             v-for="pos in data"
             :key="pos.share?.figi || pos.etf?.figi"
