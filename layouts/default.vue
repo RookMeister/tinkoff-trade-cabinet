@@ -1,4 +1,6 @@
 <script setup lang="ts" generic="T extends any, O extends any">
+import { SpeedInsights } from "@vercel/speed-insights/nuxt"
+
 const route = useRoute()
 const color = useColorMode()
 color.preference = 'system'
@@ -7,6 +9,7 @@ const nameRoute = computed(() => route.name?.toString() || '')
 </script>
 
 <template>
+  <SpeedInsights />
   <van-config-provider :theme="color.preference">
     <slot name="header" />
     <main class="px-1 mx-auto max-w-7xl">
