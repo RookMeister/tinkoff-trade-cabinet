@@ -14,8 +14,8 @@ const show = ref(false)
 const currentIsin = ref('')
 const operations = ref<SerializeObject<OperationItem>[]>([])
 
-function openOperations(value: SerializeObject<OperationItem>[], isin: string) {
-  currentIsin.value = isin
+function openOperations(value: SerializeObject<OperationItem>[], isin?: string) {
+  currentIsin.value = isin || ''
   operations.value = value
   show.value = true
 }
@@ -37,16 +37,23 @@ async function onRefresh() {
       <van-pull-refresh v-model="loading" @refresh="onRefresh">
         <van-loading v-if="!data && pending" class="text-center" />
         <van-cell-group v-else-if="data && !pending" inset>
-          <van-cell
+          <!-- <van-cell
             v-for="pos in data"
-            :key="pos.figi"
-            :title="pos.name"
+            :key="pos.share?.figi || pos.etf?.figi"
+            :title="pos.share?.name || pos.etf?.name"
             :label="`${useMoneyFormatKopek(toNumber(pos.currentPrice))}`"
             center
-            @click="openOperations(pos.operations, pos.isin)"
+            @click="openOperations(pos.operations, pos.share?.isin || pos.etf?.isin)"
+          > -->
+          <van-cell
+            v-for="pos in data"
+            :key="pos.share?.figi || pos.etf?.figi"
+            :title="pos.share?.name || pos.etf?.name"
+            center
+            @click="openOperations(pos.operations, pos.share?.isin || pos.etf?.isin)"
           >
             <template #icon>
-              <van-image class="mr-4 h-8 w-8" round :src="getUrlImg(pos.isin)" />
+              <van-image class="mr-4 h-8 w-8" round :src="getUrlImg(pos.share?.isin || pos.etf?.isin)" />
             </template>
             <template #value>
               <div :style="{ color: colorText(pos.allYield + pos.expectedYield) }">

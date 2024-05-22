@@ -1,27 +1,27 @@
-import type { PortfolioPosition } from 'tinkoff-invest-api/src/generated/operations'
-import { Helpers, TinkoffInvestApi } from 'tinkoff-invest-api'
+import { ApiTinkoff, currencies, etfs, shares } from '~/server/db'
 
 export default defineEventHandler(async (event) => {
-  const token = getCookie(event, 'token') || ''
-  const api = new TinkoffInvestApi({ token })
+  const { token = '' } = parseCookies(event)
+
+  const api = new ApiTinkoff(token)
   // получить список счетов
-  const { accounts } = await api.users.getAccounts({})
+  const { accounts } = await api.getAccounts()
   const accountId = accounts[0].id
-  const portfolio = await api.operations.getPortfolio({ accountId })
+  const portfolio = await api.getPortfolio(accountId)
 
-  const idShares = portfolio.positions.filter(({ instrumentType }) => instrumentType === 'share').map(({ figi }) => figi)
-  const idsCurrency = portfolio.positions.filter(({ instrumentType }) => instrumentType === 'currency').map(({ figi }) => figi)
-  const arrPromisesMyShared = await api.instruments.shares({ instrumentStatus: 2 })
-  const arrPromisesMyCurrency = await api.instruments.currencies({ instrumentStatus: 2 })
+  const positions = []
+  for (const item of portfolio.positions) {
+    const share = item.instrumentType === 'share' ? shares.get(item.figi) || await api.getShare(item.figi) : undefined
+    const etf = item.instrumentType === 'etf' ? etfs.get(item.figi) || await api.getEtf(item.figi) : undefined
+    const currency = item.instrumentType === 'currency' ? currencies.get(item.figi) || await api.getCurrency(item.figi) : undefined
 
-  const allData = {
-    ...Object.fromEntries(arrPromisesMyShared.instruments.filter(({ figi }) => idShares.includes(figi)).map(item => [item.figi, item])),
-    ...Object.fromEntries(arrPromisesMyCurrency.instruments.filter(({ figi }) => idsCurrency.includes(figi)).map(item => [item.figi, item])),
+    const data = share || etf || currency
+    positions.push({ ...item, name: data?.name, figi: data?.figi, isin: data?.isin, ticker: data?.ticker })
   }
 
   const portfolioData = {
     expectedYield: portfolio.expectedYield,
-    positions: portfolio.positions.map((item: PortfolioPosition) => ({ ...item, ...allData[item.figi] })),
+    positions,
     totalAmountBonds: portfolio.totalAmountBonds,
     totalAmountCurrencies: portfolio.totalAmountCurrencies,
     totalAmountEtf: portfolio.totalAmountEtf,

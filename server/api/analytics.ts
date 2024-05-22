@@ -1,22 +1,27 @@
-import { Helpers, TinkoffInvestApi } from 'tinkoff-invest-api'
-import type { Share } from 'tinkoff-invest-api/cjs/generated/instruments'
+import { Helpers } from 'tinkoff-invest-api'
+import type { Etf, Share } from 'tinkoff-invest-api/cjs/generated/instruments'
 import type { OperationItem } from 'tinkoff-invest-api/src/generated/operations'
-import type { Quotation } from 'tinkoff-invest-api/src/generated/common'
+import { ApiTinkoff, etfs, shares } from '~/server/db'
 
-interface MyOperations extends Share {
+interface MyOperations {
   operations: OperationItem[]
   allYield: number
-  currentPrice?: Quotation
   expectedYield: number
+  share?: Share
+  etf?: Etf
 }
+const operationsUsers: Map<string, OperationItem[]> = new Map()
 
 export default defineEventHandler(async (event) => {
-  const token = getCookie(event, 'token') || ''
-  const api = new TinkoffInvestApi({ token })
+  const { token = '' } = parseCookies(event)
+  const api = new ApiTinkoff(token)
+  // const startTime = new Date().getTime()
+  // console.log('start', 0, operationsUsers.get(token)?.length)
 
-  const { accounts } = await api.users.getAccounts({})
+  const { accounts } = await api.getAccounts()
   const accountId = accounts[0].id
-  const operations = await api.operations.getOperationsByCursor({
+
+  const paramsOperations = {
     accountId,
     state: 1,
     instrumentId: '',
@@ -26,52 +31,67 @@ export default defineEventHandler(async (event) => {
     withoutCommissions: false,
     withoutTrades: false,
     withoutOvernights: false,
-  })
+  }
 
-  const portfolio = await api.operations.getPortfolio({ accountId })
-  console.log(operations.items.filter(({ instrumentType }) => instrumentType === 'share').map(({ name, description }) => `${name} ${description}`))
+  async function getOperationsByCursor() {
+    const arrOperations = operationsUsers.get(token) ?? []
+    const length = arrOperations.length
 
-  const idSharesOperations = operations.items.filter(({ instrumentType }) => instrumentType === 'share').map(({ figi }) => figi)
-  const idSharesOperationsUnique = [...new Set(idSharesOperations)]
-  const arrPromisesMyShared = idSharesOperationsUnique.map(id => api.instruments.shareBy({ id, idType: 1, classCode: '' }))
-  const shapes = await Promise.all([...arrPromisesMyShared])
-  const { lastPrices } = await api.marketdata.getLastPrices({ figi: idSharesOperationsUnique })
+    if (length >= 1000) {
+      const cursor = arrOperations.at(-1)?.cursor || ''
+      const operationsRes = await api.getOperationsByCursor({ ...paramsOperations, cursor })
+      arrOperations.push(...operationsRes.items)
+    }
+    else if (length === 0) {
+      const operationsRes = await api.getOperationsByCursor(paramsOperations)
+      operationsUsers.set(token, operationsRes.items)
+      arrOperations.push(...operationsRes.items)
+    }
+    return arrOperations
+  }
 
-  const objectLastPrices = Object.fromEntries(lastPrices.map(({ figi, price }) => [figi, price]))
+  const operations = await getOperationsByCursor()
+
+  const portfolio = await api.getPortfolio(accountId)
   const objecPortfolioPosition = Object.fromEntries(portfolio.positions.map(pos => [pos.figi, pos]))
-  const objectShapes: { [key: string]: Share } = Object.fromEntries(shapes.filter(({ instrument }) => instrument).map(shape => [shape.instrument?.name, shape.instrument]))
 
   const myOperations: { [key: string]: MyOperations } = {}
-  operations.items.forEach((o) => {
-    const isin = objectShapes[o.name]?.isin
-    if (isin && !myOperations[isin] && o.instrumentType !== 'currency') {
-      const shape = objectShapes[o.name]
-      myOperations[isin] = {
-        operations: [],
-        allYield: 0,
-        expectedYield: 0,
-        ...shape,
+
+  async function setMyOperations() {
+    for (const o of operations) {
+      const share = o.instrumentType === 'share' ? shares.get(o.name) || await api.getShare(o.figi) : undefined
+      const etf = o.instrumentType === 'etf' ? etfs.get(o.name) || await api.getEtf(o.figi) : undefined
+      const isin = share?.isin || etf?.isin
+
+      if (isin && !myOperations[isin] && o.instrumentType !== 'currency') {
+        myOperations[isin] = {
+          operations: [],
+          allYield: 0,
+          expectedYield: 0,
+          share,
+          etf,
+        }
+      }
+      const expectedYield = objecPortfolioPosition[o.figi]?.expectedYield
+      const averagePositionPrice = objecPortfolioPosition[o.figi]?.averagePositionPrice
+      const quantity = objecPortfolioPosition[o.figi]?.quantity
+
+      if (isin && expectedYield && averagePositionPrice && quantity && myOperations[isin])
+        myOperations[isin].expectedYield = Helpers.toNumber(expectedYield)
+
+      if (isin && averagePositionPrice && quantity && myOperations[isin])
+        myOperations[isin].expectedYield += Helpers.toNumber(averagePositionPrice) * Helpers.toNumber(quantity)
+
+      if (isin && myOperations[isin] && ((o.type === 15) || (o.type === 21) || (o.type === 22)) && (o.instrumentType !== 'currency')) {
+        myOperations[isin].allYield += Helpers.toNumber(o.payment) || 0
+
+        myOperations[isin].operations.push(o)
       }
     }
-    const expectedYield = objecPortfolioPosition[o.figi]?.expectedYield
-    console.log(1, expectedYield)
+  }
 
-    const averagePositionPrice = objecPortfolioPosition[o.figi]?.averagePositionPrice
-    const quantity = objecPortfolioPosition[o.figi]?.quantity
-
-    if (expectedYield && averagePositionPrice && quantity && myOperations[isin]) {
-      console.log(2, Helpers.toNumber(expectedYield))
-      myOperations[isin].expectedYield = Helpers.toNumber(expectedYield)
-    }
-    if (averagePositionPrice && quantity && myOperations[isin])
-      myOperations[isin].expectedYield += Helpers.toNumber(averagePositionPrice) * Helpers.toNumber(quantity)
-
-    if (myOperations[isin] && ((o.type === 15) || (o.type === 21) || (o.type === 22)) && (o.instrumentType !== 'currency')) {
-      myOperations[isin].allYield += Helpers.toNumber(o.payment) || 0
-
-      myOperations[isin].currentPrice = objectLastPrices[o.figi]
-      myOperations[isin].operations.push(o)
-    }
-  })
+  await setMyOperations()
+  // const endTime = new Date().getTime()
+  // console.log('end', endTime - startTime, operationsUsers.get(token)?.length)
   return Object.values(myOperations)
 })

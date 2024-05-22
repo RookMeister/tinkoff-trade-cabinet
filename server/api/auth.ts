@@ -1,7 +1,7 @@
 import { TinkoffInvestApi } from 'tinkoff-invest-api'
 
 export default defineEventHandler(async (event) => {
-  const token = getCookie(event, 'token') || ''
+  const { token = '' } = parseCookies(event)
 
   try {
     const api = new TinkoffInvestApi({ token })
