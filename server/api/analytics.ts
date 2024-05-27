@@ -1,4 +1,4 @@
-import { Helpers } from 'tinkoff-invest-api'
+import { Helpers, TinkoffInvestApi } from 'tinkoff-invest-api'
 import type { Etf, Share } from 'tinkoff-invest-api/cjs/generated/instruments'
 import type { OperationItem } from 'tinkoff-invest-api/src/generated/operations'
 import { ApiTinkoff, etfs, shares } from '~/server/db'
@@ -19,6 +19,7 @@ const operationsUsers: Map<string, OperationItem[]> = new Map()
 export default defineEventHandler(async (event) => {
   const { token = '' } = parseCookies(event)
   const api = new ApiTinkoff(token)
+  const api1 = new TinkoffInvestApi({ token })
   // const startTime = new Date().getTime()
   // console.log('start', 0, operationsUsers.get(token)?.length)
 
@@ -141,8 +142,12 @@ export default defineEventHandler(async (event) => {
       }
       if (o.type === 9 && (o.instrumentType !== 'currency')) {
         allData.typeOutputOp.push(o)
-        allData.typeOutput += o.payment?.currency === 'rub' ? Helpers.toNumber(o.payment) || 0 : -189205
-        // allData.typeOutput += Helpers.toNumber(o.payment) || 0
+        if (o.payment?.currency === 'usd') {
+          const { candles } = await api.getCandles({ figi: 'BBG0013HGFT4', from: new Date('2022-02-27T20:06:22.000Z'), to: new Date('2022-02-28T20:06:22.000Z'), interval: 5 })
+          allData.typeOutput += candles[0] && candles[0].close ? Helpers.toNumber(candles[0].close) * Helpers.toNumber(o.payment) || 0 : 0
+        } else {
+          allData.typeOutput += Helpers.toNumber(o.payment) || 0
+        }
       }
 
       if (isin && myOperations[isin])

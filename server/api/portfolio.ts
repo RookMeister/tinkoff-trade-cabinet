@@ -26,7 +26,7 @@ export default defineEventHandler(async (event) => {
     totalAmountCurrencies: portfolio.totalAmountCurrencies,
     totalAmountEtf: portfolio.totalAmountEtf,
     totalAmountFutures: portfolio.totalAmountFutures,
-    totalAmountShares: portfolio.totalAmountShares,
+    totalAmountShares: portfolio.totalAmountShares
   }
 
   return portfolioData

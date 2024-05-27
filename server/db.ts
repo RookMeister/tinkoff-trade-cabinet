@@ -1,5 +1,6 @@
 import { TinkoffInvestApi } from 'tinkoff-invest-api'
 import type { Currency, Etf, Share } from 'tinkoff-invest-api/cjs/generated/instruments'
+import { CandleInterval } from 'tinkoff-invest-api/cjs/generated/marketdata'
 
 export const shares: Map<string, Share> = new Map()
 export const etfs: Map<string, Etf> = new Map()
@@ -22,6 +23,10 @@ export class ApiTinkoff {
 
   getOperationsByCursor(paramsOperations: unknown) {
     return this.api.operations.getOperationsByCursor(paramsOperations)
+  }
+
+  async getCandles(params: unknown) {
+    return this.api.marketdata.getCandles(params)
   }
 
   async getShare(id: string) {

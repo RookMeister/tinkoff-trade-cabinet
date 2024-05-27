@@ -1,5 +1,5 @@
 import '@total-typescript/ts-reset/filter-boolean'
-import { Helpers, TinkoffInvestApi } from 'tinkoff-invest-api'
+import { TinkoffInvestApi } from 'tinkoff-invest-api'
 
 export default defineEventHandler(async (event) => {
   const { token = '' } = parseCookies(event)
