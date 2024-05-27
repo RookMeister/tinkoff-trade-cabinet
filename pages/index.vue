@@ -15,6 +15,7 @@ async function onRefresh() {
 
 const currencies = computed(() => data.value?.positions.filter(pos => pos.instrumentType === 'currency') ?? [])
 const etfs = computed(() => data.value?.positions.filter(pos => pos.instrumentType === 'etf') ?? [])
+const shares = computed(() => data.value?.positions.filter(pos => pos.instrumentType === 'share') ?? [])
 </script>
 
 <template>
@@ -43,7 +44,7 @@ const etfs = computed(() => data.value?.positions.filter(pos => pos.instrumentTy
             inset
           >
             <van-cell
-              v-for="pos in data.positions.filter(pos => pos.instrumentType === 'share')"
+              v-for="pos in shares"
               :key="pos.figi"
               :title="pos.name"
               :label="pos.ticker"
@@ -62,7 +63,7 @@ const etfs = computed(() => data.value?.positions.filter(pos => pos.instrumentTy
                     {{ `${useMoneyFormatKopek(pos.averagePositionPrice)} &#8594; ${useMoneyFormatKopek(pos.currentPrice)}` }}
                   </div>
                   <div class="w-32">
-                    <div>{{ `${useMoneyFormatKopek(pos.currentPrice * toNumber(pos.quantity))}` }}</div>
+                    <div>{{ `${useMoneyFormatKopek(toNumber(pos.currentPrice) * toNumber(pos.quantity))}` }}</div>
                     <div>{{ `${toNumber(pos.quantity)} шт.` }}</div>
                   </div>
                   <div
@@ -122,7 +123,7 @@ const etfs = computed(() => data.value?.positions.filter(pos => pos.instrumentTy
                     {{ `${useMoneyFormatKopek(pos.averagePositionPrice)} &#8594; ${useMoneyFormatKopek(pos.currentPrice)}` }}
                   </div>
                   <div class="w-32">
-                    <div>{{ `${useMoneyFormatKopek(pos.currentPrice * toNumber(pos.quantity))}` }}</div>
+                    <div>{{ `${useMoneyFormatKopek(toNumber(pos.currentPrice) * toNumber(pos.quantity))}` }}</div>
                     <div>{{ `${toNumber(pos.quantity)} шт.` }}</div>
                   </div>
                   <div

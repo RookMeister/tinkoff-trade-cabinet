@@ -12,7 +12,9 @@ export function useMoneyFormatKopek(value: MoneyValue | Quotation | number | und
   // const sign = isSign ? Number(price) >= 0 ? ' +' : ' –' : ''
   // return `${sign}${res[0]},${res[1]}${separator}${currency}`
   // const locale = 'ru-RU'
-  const price = (value as MoneyValue).currency ? toNumber(value as MoneyValue) : value as number
+  const price = (value as MoneyValue).units ? toNumber(value as MoneyValue) : value as number
+  console.log();
+
   const currencies: Record<string, string> = {
     rub: '₽',
     usd: '$'
