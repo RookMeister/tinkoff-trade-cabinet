@@ -20,7 +20,7 @@ export class ApiTinkoff {
     return this.api.operations.getPortfolio({ accountId })
   }
 
-  getOperationsByCursor(paramsOperations: any) {
+  getOperationsByCursor(paramsOperations: unknown) {
     return this.api.operations.getOperationsByCursor(paramsOperations)
   }
 

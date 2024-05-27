@@ -2,7 +2,7 @@
 import { closeToast, showLoadingToast } from 'vant'
 
 definePageMeta({
-  layout: false,
+  layout: false
 })
 
 const title = 'Профиль'
@@ -14,12 +14,10 @@ const { data, refresh } = await useFetch('/api/auth')
 
 const tokenForm = ref(token.value || '')
 
-function onSubmit() {
+async function onSubmit() {
   showLoadingToast({ message: 'Проверка токена...', forbidClick: true })
   token.value = tokenForm.value
-  setTimeout(async () => {
-    await refresh()
-  }, 500)
+  await refresh()
   if (data.value)
     data.value.success ? router.push('/') : showFailToast(data.value.message)
 }
@@ -28,7 +26,12 @@ function onSubmit() {
 <template>
   <NuxtLayout name="default">
     <template #header>
-      <van-nav-bar :title="title" :border="false" safe-area-inset-top fixed />
+      <van-nav-bar
+        :title="title"
+        :border="false"
+        safe-area-inset-top
+        fixed
+      />
     </template>
     <template #default>
       <van-form @submit="onSubmit">
@@ -41,7 +44,13 @@ function onSubmit() {
             :rules="[{ required: true, message: 'Отсутствует токен' }]"
           >
             <template #button>
-              <van-button size="small" round block type="primary" @click="onSubmit">
+              <van-button
+                size="small"
+                round
+                block
+                type="primary"
+                @click="onSubmit"
+              >
                 Применить
               </van-button>
             </template>
