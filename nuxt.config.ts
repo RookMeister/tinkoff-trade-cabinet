@@ -1,36 +1,47 @@
-// import { pwa } from './config/pwa'
 import { appDescription } from './constants/index'
 
 export default defineNuxtConfig({
   modules: [
     '@nuxt/ui',
     '@nuxt/image',
+    '@nuxt/eslint',
     '@vueuse/nuxt',
     '@unocss/nuxt',
-    '@pinia/nuxt',
     '@nuxtjs/color-mode',
-    '@vant/nuxt',
-    '@vite-pwa/nuxt',
+    '@vant/nuxt'
   ],
 
   colorMode: {
-    classPrefix: 'van-theme-',
+    classPrefix: 'van-theme-'
+  },
+
+  eslint: {
+    config: {
+      stylistic: {
+        commaDangle: 'never',
+        braceStyle: '1tbs'
+      }
+    }
+  },
+
+  typescript: {
+    strict: false
   },
 
   css: [
-    '@unocss/reset/tailwind.css',
+    '@unocss/reset/tailwind.css'
   ],
 
   nitro: {
     esbuild: {
       options: {
-        target: 'esnext',
-      },
+        target: 'esnext'
+      }
     },
     prerender: {
       crawlLinks: false,
-      routes: ['/'],
-    },
+      routes: ['/']
+    }
   },
 
   app: {
@@ -46,15 +57,15 @@ export default defineNuxtConfig({
         { rel: 'icon', sizes: '32x32', type: 'image/png', href: '/favicon-32x32.png' },
         { rel: 'icon', sizes: '16x16', type: 'image/png', href: '/favicon-16x16.png' },
         { rel: 'mask-icon', color: '#616161', href: '/safari-pinned-tab.svg' },
-        { rel: 'manifest', href: '/manifest.json' },
+        { rel: 'manifest', href: '/manifest.json' }
       ],
       meta: [
         { name: 'description', content: appDescription },
         { name: 'apple-mobile-web-app-capable', content: 'yes' },
         { name: 'msapplication-TileColor', content: '#da532c' },
         { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' },
-        { name: 'viewport', content: 'width=device-width, height=device-height, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover' },
-      ],
-    },
-  },
+        { name: 'viewport', content: 'width=device-width, height=device-height, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover' }
+      ]
+    }
+  }
 })

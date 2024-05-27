@@ -1,28 +1,4 @@
-<script setup lang="ts">
-// import { appName } from '~/constants'
-
-// const color = useColorMode()
-
-// useHead({
-//   title: appName,
-// })
-
-// watch(color, (val) => {
-//   if (val === 'van-doc-theme-dark') {
-//     // color.value = 'van-doc-theme-dark'
-//     if (process.browser)
-//       // document.querySelector('html').setAttribute('data-theme', 'dark')
-//   }
-//   else {
-//     // color.value = 'van-doc-theme-light'
-//     if (process.browser)
-//       // document.querySelector('html').setAttribute('data-theme', 'light')
-//   }
-// }, { immediate: true })
-</script>
-
 <template>
-  <VitePwaManifest />
   <NuxtLayout>
     <NuxtPage />
   </NuxtLayout>
