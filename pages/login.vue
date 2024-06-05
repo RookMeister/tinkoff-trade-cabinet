@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { closeToast, showLoadingToast } from 'vant'
+import { showLoadingToast } from 'vant'
 
 definePageMeta({
   layout: false

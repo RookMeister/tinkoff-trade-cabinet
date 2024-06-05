@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) => {
     operationTypes: [],
     withoutCommissions: false,
     withoutTrades: false,
-    withoutOvernights: false,
+    withoutOvernights: false
   })
 
   const idSharesOperations = operations.items.filter(({ instrumentType }) => instrumentType === 'share').map(({ figi }) => figi)
@@ -43,7 +43,7 @@ export default defineEventHandler(async (event) => {
         yieldRelativeNumber: Helpers.toNumber(o.yieldRelative),
         paymentNumber: Helpers.toNumber(o.payment),
         priceNumber: Helpers.toNumber(o.price),
-        isin: positionsData[o.figi]?.isin || o.name,
+        isin: positionsData[o.figi]?.isin || o.name
       })
     }
   })
