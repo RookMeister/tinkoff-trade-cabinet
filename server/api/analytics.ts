@@ -1,6 +1,6 @@
-import { Helpers, TinkoffInvestApi } from 'tinkoff-invest-api'
+import { Helpers } from 'tinkoff-invest-api'
 import type { Etf, Share } from 'tinkoff-invest-api/cjs/generated/instruments'
-import type { OperationItem } from 'tinkoff-invest-api/src/generated/operations'
+import type { OperationItem, GetOperationsByCursorRequest } from 'tinkoff-invest-api/src/generated/operations'
 import { ApiTinkoff, etfs, shares } from '~/server/db'
 
 interface MyOperations {
@@ -19,14 +19,13 @@ const operationsUsers: Map<string, OperationItem[]> = new Map()
 export default defineEventHandler(async (event) => {
   const { token = '' } = parseCookies(event)
   const api = new ApiTinkoff(token)
-  const api1 = new TinkoffInvestApi({ token })
   // const startTime = new Date().getTime()
   // console.log('start', 0, operationsUsers.get(token)?.length)
 
   const { accounts } = await api.getAccounts()
   const accountId = accounts[0].id
 
-  const paramsOperations = {
+  const paramsOperations: GetOperationsByCursorRequest = {
     accountId,
     state: 1,
     instrumentId: '',
@@ -35,7 +34,9 @@ export default defineEventHandler(async (event) => {
     operationTypes: [],
     withoutCommissions: false,
     withoutTrades: false,
-    withoutOvernights: false
+    withoutOvernights: false,
+    from: new Date(2023, 0, 1),
+    to: new Date()
   }
 
   async function getOperationsByCursor() {
