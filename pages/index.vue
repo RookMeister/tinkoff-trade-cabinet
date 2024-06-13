@@ -5,7 +5,7 @@ const title = 'Главная'
 useHead({ title })
 
 const { data, pending } = useFetch('/api/portfolio', { lazy: true })
-
+const { isMobile } = useDevice()
 const currencies = computed(() => data.value?.positions.filter(pos => pos.instrumentType === 'currency') ?? [])
 const etfs = computed(() => data.value?.positions.filter(pos => pos.instrumentType === 'etf') ?? [])
 const shares = computed(() => data.value?.positions.filter(pos => pos.instrumentType === 'share') ?? [])
@@ -48,10 +48,13 @@ const shares = computed(() => data.value?.positions.filter(pos => pos.instrument
             </template>
             <template #value>
               <div class="flex justify-end">
-                <div>
+                <div v-if="!isMobile">
                   {{ `${useMoneyFormatKopek(pos.averagePositionPrice)} &#8594; ${useMoneyFormatKopek(pos.currentPrice)}` }}
                 </div>
-                <div class="w-32">
+                <div
+                  v-if="!isMobile"
+                  class="w-32"
+                >
                   <div>{{ `${useMoneyFormatKopek(toNumber(pos.currentPrice) * toNumber(pos.quantity))}` }}</div>
                   <div>{{ `${toNumber(pos.quantity)} шт.` }}</div>
                 </div>
@@ -108,10 +111,13 @@ const shares = computed(() => data.value?.positions.filter(pos => pos.instrument
             </template>
             <template #value>
               <div class="flex justify-end">
-                <div>
+                <div v-if="!isMobile">
                   {{ `${useMoneyFormatKopek(pos.averagePositionPrice)} &#8594; ${useMoneyFormatKopek(pos.currentPrice)}` }}
                 </div>
-                <div class="w-32">
+                <div
+                  v-if="!isMobile"
+                  class="w-32"
+                >
                   <div>{{ `${useMoneyFormatKopek(toNumber(pos.currentPrice) * toNumber(pos.quantity))}` }}</div>
                   <div>{{ `${toNumber(pos.quantity)} шт.` }}</div>
                 </div>

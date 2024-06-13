@@ -9,6 +9,9 @@ const title = 'Аналитика'
 useHead({ title })
 
 const { data, pending } = useFetch('/api/analytics', { lazy: true })
+
+const { isMobile } = useDevice()
+
 // setInterval(() => { refresh() }, 5000)
 
 const show = ref(false)
@@ -157,7 +160,7 @@ const total = computed(() => {
             </template>
             <template #value>
               <div class="flex justify-end">
-                <div v-if="pos.dividendYield">
+                <div v-if="pos.dividendYield && !isMobile">
                   <div>Торговля: {{ `${useMoneyFormatKopek(pos.allYield + pos.expectedYield, true)}` }}</div>
                   <div>Дивиденды: {{ `${useMoneyFormatKopek(pos.dividendYield, true)}` }}</div>
                 </div>

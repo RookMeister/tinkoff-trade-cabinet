@@ -29,6 +29,9 @@ dependencies:
   '@nuxtjs/color-mode':
     specifier: ^3.3.2
     version: 3.4.1
+  '@nuxtjs/device':
+    specifier: ^3.1.1
+    version: 3.1.1
   '@vant/nuxt':
     specifier: ^1.0.4
     version: 1.0.4(vant@4.9.0)
@@ -1678,6 +1681,16 @@ packages:
       pathe: 1.1.2
       pkg-types: 1.1.1
       semver: 7.6.2
+    transitivePeerDependencies:
+      - rollup
+      - supports-color
+    dev: false
+
+  /@nuxtjs/device@3.1.1:
+    resolution: {integrity: sha512-wHTziEevt1hdgePQwPhEedWW3COalhP0YGVB+sGLqSrKujX8vdz7lcBFB01KIftpaP8kY5H8pssibNaJbxGcYw==}
+    dependencies:
+      '@nuxt/kit': 3.11.2
+      defu: 6.1.4
     transitivePeerDependencies:
       - rollup
       - supports-color

@@ -19,6 +19,7 @@ const operationsUsers: Map<string, OperationItem[]> = new Map()
 export default defineEventHandler(async (event) => {
   const { token = '' } = parseCookies(event)
   const api = new ApiTinkoff(token)
+
   // const startTime = new Date().getTime()
   // console.log('start', 0, operationsUsers.get(token)?.length)
 

@@ -8,7 +8,8 @@ export default defineNuxtConfig({
     '@vueuse/nuxt',
     '@unocss/nuxt',
     '@nuxtjs/color-mode',
-    '@vant/nuxt'
+    '@vant/nuxt',
+    '@nuxtjs/device'
   ],
 
   colorMode: {
