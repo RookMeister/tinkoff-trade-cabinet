@@ -25,37 +25,41 @@ export default defineEventHandler(async (event) => {
   const { accounts } = await api.getAccounts()
   const accountId = accounts[0].id
 
-  const paramsOperations: GetOperationsByCursorRequest = {
-    accountId,
-    state: 1,
-    instrumentId: '',
-    cursor: '',
-    limit: 1000,
-    operationTypes: [],
-    withoutCommissions: false,
-    withoutTrades: false,
-    withoutOvernights: false,
-    from: new Date(2023, 0, 1),
-    to: new Date()
-  }
-
-  async function getOperationsByCursor() {
+  async function getOperationsByCursor(cursor = '') {
     const arrOperations = operationsUsers.get(token) ?? []
-    const length = arrOperations.length
-
-    if (length >= 1000) {
-      const cursor = arrOperations.at(-1)?.cursor || ''
-      const operationsRes = await api.getOperationsByCursor({ ...paramsOperations, cursor })
-      arrOperations.push(...operationsRes.items)
-    } else if (length === 0) {
-      const operationsRes = await api.getOperationsByCursor(paramsOperations)
-      operationsUsers.set(token, operationsRes.items)
-      arrOperations.push(...operationsRes.items)
+    const paramsOperations: GetOperationsByCursorRequest = {
+      accountId,
+      state: 1,
+      instrumentId: '',
+      cursor,
+      limit: 1000,
+      operationTypes: [],
+      withoutCommissions: false,
+      withoutTrades: false,
+      withoutOvernights: false,
+      from: new Date(2023, 0, 1),
+      to: new Date()
     }
-    return arrOperations
+
+    if (arrOperations.length / 1000 > Math.trunc(arrOperations.length / 1000)) {
+      return arrOperations
+    }
+
+    const operationsRes = await api.getOperationsByCursor(paramsOperations)
+    arrOperations.push(...operationsRes.items)
+    operationsUsers.set(token, arrOperations)
+    return operationsRes.items
   }
 
   const operations = await getOperationsByCursor()
+
+  if (operations.length / 1000 === Math.trunc(operations.length / 1000)) {
+    for (let index = 0; index < Math.floor(operations.length / 1000); index++) {
+      const cursor = operations.at(-1)?.cursor || ''
+      const newOperations = await getOperationsByCursor(cursor)
+      operations.push(...newOperations)
+    }
+  }
 
   const portfolio = await api.getPortfolio(accountId)
   const objecPortfolioPosition = Object.fromEntries(portfolio.positions.map(pos => [pos.figi, pos]))
@@ -67,12 +71,12 @@ export default defineEventHandler(async (event) => {
     brokerFee: 0,
     typeInput: 0,
     typeOutput: 0,
-    dividendYieldOp: [],
-    totalTaxOp: [],
-    serviceFeeOp: [],
-    brokerFeeOp: [],
-    typeInputOp: [],
-    typeOutputOp: []
+    dividendYieldOp: [] as OperationItem[],
+    totalTaxOp: [] as OperationItem[],
+    serviceFeeOp: [] as OperationItem[],
+    brokerFeeOp: [] as OperationItem[],
+    typeInputOp: [] as OperationItem[],
+    typeOutputOp: [] as OperationItem[]
   }
   const myOperations: { [key: string]: MyOperations } = {}
 
@@ -138,6 +142,7 @@ export default defineEventHandler(async (event) => {
       }
 
       if (o.type === 1 && (o.instrumentType !== 'currency')) {
+        // console.log(o.payment?.units, o.date)
         allData.typeInputOp.push(o)
         allData.typeInput += Helpers.toNumber(o.payment) || 0
       }
